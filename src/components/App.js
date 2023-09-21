@@ -1,6 +1,6 @@
 import { NavBar } from "./NavBar";
 import { Main } from "./Main";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Logo } from "./Logo";
 import { NumResults } from "./NumResults";
 import { Search } from "./Search";
@@ -8,6 +8,9 @@ import { Box } from "./Box";
 import { MovieList } from "./MovieList";
 import { WatchedSummary } from "./WatchedSummary";
 import { WatchedMovieList } from "./WatchedMovieList";
+import { Loader } from "./Loader";
+import { ErrorMessage } from "./ErrorMessage";
+import { MovieDetails } from "./MovieDetails";
 
 export const tempMovieData = [
 	{
@@ -56,26 +59,103 @@ export const tempWatchedData = [
 
 export const average = arr => arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
+export const KEY = "b4b0c6a";
+
 export default function App() {
-	const [movies, setMovies] = useState(tempMovieData);
-	const [watched, setWatched] = useState(tempWatchedData);
+	const [query, setQuery] = useState("");
+	const [movies, setMovies] = useState([]);
+	const [watched, setWatched] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState("");
+	const [selectedId, setSelectedId] = useState(null);
+
+	/// Educational test
+	/* 	useEffect(function () {
+		console.log("After initial render");
+	}, []);
+
+	useEffect(function () {
+		console.log("After every render");
+	});
+
+	console.log("During render");
+	useEffect(
+		function () {
+			console.log("When query state is changed");
+		},
+		[query]
+	); */
+
+	function handleSelectMovie(id) {
+		setSelectedId(selectedId => (id === selectedId ? null : id));
+	}
+
+	function handleCloseMovie() {
+		setSelectedId(null);
+	}
+
+	useEffect(
+		function () {
+			async function fetchMovies() {
+				try {
+					setIsLoading(true);
+					setError("");
+
+					const res = await fetch(`https://www.omdbapi.com/?s=${query}&apikey=${KEY}
+		`);
+					// 			const res = await fetch(`https://www.omdbapi.com/?s=${query}&apikey=${KEY}
+					// `).catch(() => {
+					// 				throw new Error("There was an issue with the network connection.");
+					// 			});
+
+					if (!res.ok) throw new Error("Something went wrong with fetching movies.");
+
+					const data = await res.json();
+					if (data.Response === "False") throw new Error(data.Error);
+
+					setMovies(data.Search);
+				} catch (err) {
+					console.error(err.message);
+					setError(err.message);
+				} finally {
+					setIsLoading(false);
+				}
+			}
+
+			if (query.length < 3) {
+				setMovies([]);
+				setError("");
+				return;
+			}
+			fetchMovies();
+		},
+		[query]
+	);
 
 	return (
 		<>
 			<NavBar>
 				<Logo />
-				<Search />
+				<Search query={query} setQuery={setQuery} />
 				<NumResults movies={movies} />
 			</NavBar>
 
 			<Main>
 				<Box>
-					<MovieList movies={movies} />
+					{isLoading && <Loader />}
+					{!isLoading && !error && <MovieList movies={movies} onSelectMovie={handleSelectMovie} />}
+					{error && <ErrorMessage message={error} />}
 				</Box>
 
 				<Box>
-					<WatchedSummary watched={watched} />
-					<WatchedMovieList watched={watched} />
+					{selectedId ? (
+						<MovieDetails selectedId={selectedId} onCloseMovie={handleCloseMovie} />
+					) : (
+						<>
+							<WatchedSummary watched={watched} />
+							<WatchedMovieList watched={watched} />
+						</>
+					)}
 				</Box>
 			</Main>
 		</>
