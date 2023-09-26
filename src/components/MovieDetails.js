@@ -3,23 +3,43 @@ import StarRating from "./StarRating";
 import { KEY } from "./App";
 import { Loader } from "./Loader";
 
-export function MovieDetails({ selectedId, onCloseMovie }) {
+export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, onRemoveWatched }) {
 	const [movie, setMovie] = useState({});
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState("");
+	const [userRating, setUserRating] = useState(watched.find(movie => movie.imdbID === selectedId)?.userRating); // FIXME this does not work on a reload and userRating returns to default of "".
 
-	const {
-		Title: title,
-		Year: year,
-		Poster: poster,
-		Runtime: runtime,
-		imdbRating,
-		Plot: plot,
-		Released: released,
-		Actors: actors,
-		Director: director,
-		Genre: genre,
-	} = movie;
+	const isWatched = watched.map(movie => movie.imdbID).includes(selectedId);
+
+	const { Title, Year, Poster, Runtime, imdbRating, Plot, Released, Actors, Director, Genre } = movie;
+
+	console.log(userRating);
+
+	function handleAdd() {
+		const newWatchedMovie = {
+			imdbID: selectedId,
+			imdbRating: +imdbRating,
+			Title,
+			Year,
+			Poster,
+			Runtime: +Runtime.split(" ").at(0),
+			userRating,
+		};
+		onAddWatched(newWatchedMovie);
+		onCloseMovie();
+	}
+
+	function handleRemove() {
+		onRemoveWatched(selectedId);
+		onCloseMovie();
+	}
+
+	// FIXME
+	/* 	function handleRating() {
+		// setMovie({ ...movie, userRating });
+		onSetRating(userRating);
+		onCloseMovie();
+	} */
 
 	useEffect(
 		function () {
@@ -57,13 +77,13 @@ export function MovieDetails({ selectedId, onCloseMovie }) {
 						<button className="btn-back" onClick={onCloseMovie}>
 							&larr;
 						</button>
-						<img src={poster} alt={`Poster of ${movie} movie`} />
+						<img src={Poster} alt={`Poster of ${movie} movie`} />
 						<div className="details-overview">
-							<h2>{title}</h2>
+							<h2>{Title}</h2>
 							<p>
-								{released} &bull; {runtime}
+								{Released} &bull; {Runtime}
 							</p>
-							<p>{genre}</p>
+							<p>{Genre}</p>
 							<p>
 								<span>⭐</span>
 								{imdbRating} IMDB rating
@@ -72,13 +92,26 @@ export function MovieDetails({ selectedId, onCloseMovie }) {
 					</header>
 					<section>
 						<div className="rating">
-							<StarRating maxRating={10} size={24} />
+							<StarRating maxRating={10} size={24} onSetRating={setUserRating} defaultRating={userRating} />
+							{!isWatched ? (
+								<>
+									{userRating > 0 && (
+										<button className="btn-add" onClick={handleAdd}>
+											➕ Add to watched list
+										</button>
+									)}
+								</>
+							) : (
+								<button className="btn-rmv" onClick={handleRemove}>
+									➖ Remove from watched list
+								</button>
+							)}
 						</div>
 						<p>
-							<em>{plot}</em>
+							<em>{Plot}</em>
 						</p>
-						<p>Starring {actors}.</p>
-						<p>Directed by {director}.</p>
+						<p>Starring {Actors}.</p>
+						<p>Directed by {Director}.</p>
 					</section>
 				</>
 			)}

@@ -306,6 +306,22 @@ body {
 .btn-add:hover {
 	background-color: var(--color-primary-light);
 }
+.btn-rmv {
+	background-color: var(--color-background-900);
+	color: var(--color-text-dark);
+	border: none;
+	border-radius: 10rem;
+	font-size: 1.4rem;
+	padding: 1rem;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0.3s;
+}
+
+.btn-rmv:hover {
+	background-color: var(--color-background-500);
+	color: var(--color-text);
+}
 
 .seconds {
 	background-color: var(--color-background-100);

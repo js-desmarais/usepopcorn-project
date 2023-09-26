@@ -1,5 +1,4 @@
 // import { useState } from "react";
-import { tempMovieData } from "./App";
 
 export function MovieList({ movies, onSelectMovie }) {
 	return (
