@@ -96,13 +96,22 @@ export default function App() {
 
 	function handleAddWatched(movie) {
 		setWatched(watched => [...watched, movie]);
-		// console.log(watched);
 	}
 
 	function handleRemoveWatched(movieID) {
 		setWatched(watched => watched.filter(movie => movie.imdbID !== movieID));
-		// console.log("removed!");
-		// console.log(watched);
+	}
+
+	function handleUpdatedRating(movieID, rating) {
+		setWatched(movies =>
+			movies.map(movie => {
+				if (movie.imdbID === movieID) {
+					movie.userRating = rating;
+				}
+				return movie;
+			})
+		);
+		console.log("rating was updated!");
 	}
 
 	useEffect(
@@ -166,6 +175,7 @@ export default function App() {
 							watched={watched}
 							onAddWatched={handleAddWatched}
 							onRemoveWatched={handleRemoveWatched}
+							onUpdatedRating={handleUpdatedRating}
 						/>
 					) : (
 						<>

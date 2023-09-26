@@ -3,7 +3,7 @@ import StarRating from "./StarRating";
 import { KEY } from "./App";
 import { Loader } from "./Loader";
 
-export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, onRemoveWatched }) {
+export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, onRemoveWatched, onUpdatedRating }) {
 	const [movie, setMovie] = useState({});
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState("");
@@ -41,6 +41,11 @@ export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, 
 		onCloseMovie();
 	} */
 
+	function handleCloseBtn() {
+		onUpdatedRating(selectedId, userRating);
+		onCloseMovie();
+	}
+
 	useEffect(
 		function () {
 			async function getMovieDetails() {
@@ -74,7 +79,7 @@ export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, 
 			) : (
 				<>
 					<header>
-						<button className="btn-back" onClick={onCloseMovie}>
+						<button className="btn-back" onClick={handleCloseBtn}>
 							&larr;
 						</button>
 						<img src={Poster} alt={`Poster of ${movie} movie`} />
