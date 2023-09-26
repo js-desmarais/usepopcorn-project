@@ -34,12 +34,6 @@ export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, 
 		onCloseMovie();
 	}
 
-	// FIXME
-	/* 	function handleRating() {
-		// setMovie({ ...movie, userRating });
-// NOTE: here add 
-		onCloseMovie();
-	} */
 
 	function handleCloseBtn() {
 		onUpdatedRating(selectedId, userRating);
