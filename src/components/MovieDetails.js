@@ -7,7 +7,7 @@ export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, 
 	const [movie, setMovie] = useState({});
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState("");
-	const [userRating, setUserRating] = useState(watched.find(movie => movie.imdbID === selectedId)?.userRating); // FIXME this does not work on a reload and userRating returns to default of "".
+	const [userRating, setUserRating] = useState(watched.find(movie => movie.imdbID === selectedId)?.userRating);
 
 	const isWatched = watched.map(movie => movie.imdbID).includes(selectedId);
 
@@ -37,7 +37,7 @@ export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, 
 	// FIXME
 	/* 	function handleRating() {
 		// setMovie({ ...movie, userRating });
-		onSetRating(userRating);
+// NOTE: here add 
 		onCloseMovie();
 	} */
 
