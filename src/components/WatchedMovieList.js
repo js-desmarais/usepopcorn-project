@@ -1,17 +1,22 @@
-export function WatchedMovieList({ watched, onRemoveWatched }) {
+export function WatchedMovieList({ watched, onRemoveWatched, onSelectMovie }) {
 	return (
 		<ul className="list">
 			{watched.map(movie => (
-				<WatchedMovie movie={movie} key={Math.random()} onRemoveWatched={onRemoveWatched} />
+				<WatchedMovie
+					movie={movie}
+					key={Math.random()}
+					onRemoveWatched={onRemoveWatched}
+					onSelectMovie={onSelectMovie}
+				/>
 			))}
 		</ul>
 	);
 }
-function WatchedMovie({ movie, onRemoveWatched }) {
+function WatchedMovie({ movie, onRemoveWatched, onSelectMovie }) {
 	return (
 		<li>
 			<img src={movie.Poster} alt={`${movie.Title} poster`} />
-			<h3>{movie.Title}</h3>
+			<h3 onClick={() => onSelectMovie(movie.imdbID)}>{movie.Title}</h3>
 			<div>
 				<p>
 					<span>⭐️</span>

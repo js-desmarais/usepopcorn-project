@@ -116,13 +116,18 @@ export default function App() {
 
 	useEffect(
 		function () {
+			const controller = new AbortController();
+
 			async function fetchMovies() {
 				try {
 					setIsLoading(true);
 					setError("");
 
-					const res = await fetch(`https://www.omdbapi.com/?s=${query}&apikey=${KEY}
-		`);
+					const res = await fetch(
+						`https://www.omdbapi.com/?s=${query}&apikey=${KEY}
+						`,
+						{ signal: controller.signal }
+					);
 					// 			const res = await fetch(`https://www.omdbapi.com/?s=${query}&apikey=${KEY}
 					// `).catch(() => {
 					// 				throw new Error("There was an issue with the network connection.");
@@ -134,9 +139,12 @@ export default function App() {
 					if (data.Response === "False") throw new Error(data.Error);
 
 					setMovies(data.Search);
+					setError("");
 				} catch (err) {
-					console.error(err.message);
-					setError(err.message);
+					if (err.name !== "AbortError") {
+						setError(err.message);
+						console.error(err.message);
+					}
 				} finally {
 					setIsLoading(false);
 				}
@@ -147,7 +155,13 @@ export default function App() {
 				setError("");
 				return;
 			}
+
+			handleCloseMovie();
 			fetchMovies();
+
+			return function () {
+				controller.abort();
+			};
 		},
 		[query]
 	);
@@ -180,7 +194,11 @@ export default function App() {
 					) : (
 						<>
 							<WatchedSummary watched={watched} />
-							<WatchedMovieList watched={watched} onRemoveWatched={handleRemoveWatched} />
+							<WatchedMovieList
+								watched={watched}
+								onRemoveWatched={handleRemoveWatched}
+								onSelectMovie={handleSelectMovie}
+							/>
 						</>
 					)}
 				</Box>
