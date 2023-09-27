@@ -8,6 +8,7 @@ export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, 
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [userRating, setUserRating] = useState(watched.find(movie => movie.imdbID === selectedId)?.userRating);
+	const [avgRating, setAvgRating] = useState(0);
 
 	const isWatched = watched.map(movie => movie.imdbID).includes(selectedId);
 
@@ -25,6 +26,8 @@ export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, 
 		};
 		onAddWatched(newWatchedMovie);
 		onCloseMovie();
+
+		// localStorage.setItem("watched", JSON.stringify([...watched, movie]));
 	}
 
 	function handleRemove() {
@@ -36,6 +39,14 @@ export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, 
 		onUpdatedRating(selectedId, userRating);
 		onCloseMovie();
 	}
+
+	//NOTE This doesn't update it. It does work when I put it in the main App file.
+	// useEffect(
+	// 	function () {
+	// 		localStorage.setItem("watched", JSON.stringify(watched));
+	// 	},
+	// 	[watched]
+	// );
 
 	useEffect(
 		function () {
@@ -126,6 +137,7 @@ export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, 
 							</p>
 						</div>
 					</header>
+					<p>{avgRating}</p>
 					<section>
 						<div className="rating">
 							<StarRating maxRating={10} size={24} onSetRating={setUserRating} defaultRating={userRating} />
