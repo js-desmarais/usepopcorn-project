@@ -1,5 +1,3 @@
-// import { useState } from "react";
-
 export function MovieList({ movies, onSelectMovie }) {
 	return (
 		<ul className="list list-movies">

@@ -1,14 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import StarRating from "./StarRating";
-import { KEY } from "./App";
+import { KEY } from "../App";
 import { Loader } from "./Loader";
+import { useKey } from "../hooks/useKey";
 
 export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, onRemoveWatched, onUpdatedRating }) {
 	const [movie, setMovie] = useState({});
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState("");
 	const [userRating, setUserRating] = useState(watched.find(movie => movie.imdbID === selectedId)?.userRating);
-	const [avgRating, setAvgRating] = useState(0);
+
+	const countRef = useRef(0);
+
+	useEffect(
+		function () {
+			if (userRating) countRef.current++;
+		},
+		[userRating]
+	);
 
 	const isWatched = watched.map(movie => movie.imdbID).includes(selectedId);
 
@@ -23,11 +32,10 @@ export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, 
 			Poster,
 			Runtime: +Runtime.split(" ").at(0),
 			userRating,
+			countRatingDecisions: countRef.current,
 		};
 		onAddWatched(newWatchedMovie);
 		onCloseMovie();
-
-		// localStorage.setItem("watched", JSON.stringify([...watched, movie]));
 	}
 
 	function handleRemove() {
@@ -40,30 +48,7 @@ export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, 
 		onCloseMovie();
 	}
 
-	//NOTE This doesn't update it. It does work when I put it in the main App file.
-	// useEffect(
-	// 	function () {
-	// 		localStorage.setItem("watched", JSON.stringify(watched));
-	// 	},
-	// 	[watched]
-	// );
-
-	useEffect(
-		function () {
-			function callback(e) {
-				if (e.code === "Escape") {
-					onCloseMovie();
-				}
-			}
-
-			document.addEventListener("keydown", callback);
-
-			return function () {
-				document.removeEventListener("keydown", callback);
-			};
-		},
-		[onCloseMovie]
-	);
+	useKey("Escape", onCloseMovie);
 
 	useEffect(
 		function () {
@@ -137,7 +122,7 @@ export function MovieDetails({ selectedId, onCloseMovie, watched, onAddWatched, 
 							</p>
 						</div>
 					</header>
-					<p>{avgRating}</p>
+
 					<section>
 						<div className="rating">
 							<StarRating maxRating={10} size={24} onSetRating={setUserRating} defaultRating={userRating} />
